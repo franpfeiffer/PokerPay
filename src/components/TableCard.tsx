@@ -4,8 +4,8 @@ import { formatCurrency } from '../utils/calculations';
 import { Users, DollarSign } from 'lucide-react';
 
 interface TableCardProps {
-  table: PokerTable;
-  onSelect: (table: PokerTable) => void;
+    table: PokerTable;
+    onSelect: (table: PokerTable) => void;
 }
 
 export const TableCard: React.FC<TableCardProps> = ({ table, onSelect }) => {

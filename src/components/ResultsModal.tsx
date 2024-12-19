@@ -4,21 +4,21 @@ import { formatCurrency } from '../utils/calculations';
 import { calculateOptimalPayments } from '../utils/paymentCalculator';
 
 interface ResultsModalProps {
-  players: Player[];
-  onClose: () => void;
-  onFinish: () => void;
+    players: Player[];
+    onClose: () => void;
+    onFinish: () => void;
 }
 
 export const ResultsModal: React.FC<ResultsModalProps> = ({ 
-  players, 
-  onClose,
-  onFinish 
+    players, 
+    onClose,
+    onFinish 
 }) => {
-  const payments = calculateOptimalPayments(players);
-  const playerMap = players.reduce((acc, player) => {
-    acc[player.id] = player;
-    return acc;
-  }, {} as { [key: string]: Player });
+    const payments = calculateOptimalPayments(players);
+    const playerMap = players.reduce((acc, player) => {
+        acc[player.id] = player;
+        return acc;
+    }, {} as { [key: string]: Player });
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">

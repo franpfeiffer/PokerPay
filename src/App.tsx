@@ -9,24 +9,24 @@ import { NewTableModal } from './components/NewTableModal';
 import { Plus } from 'lucide-react';
 
 function App() {
-  const [tables, setTables] = useState<PokerTable[]>([]);
-  const [selectedTable, setSelectedTable] = useState<PokerTable | null>(null);
-  const [showResults, setShowResults] = useState(false);
-  const [showNewTableForm, setShowNewTableForm] = useState(false);
+    const [tables, setTables] = useState<PokerTable[]>([]);
+    const [selectedTable, setSelectedTable] = useState<PokerTable | null>(null);
+    const [showResults, setShowResults] = useState(false);
+    const [showNewTableForm, setShowNewTableForm] = useState(false);
 
-  const createNewTable = (name: string) => {
-    const newTable: PokerTable = {
-      id: uuidv4(),
-      name,
-      players: [],
-      totalPot: 0,
-      isActive: true,
-      createdAt: new Date()
+    const createNewTable = (name: string) => {
+        const newTable: PokerTable = {
+            id: uuidv4(),
+            name,
+            players: [],
+            totalPot: 0,
+            isActive: true,
+            createdAt: new Date()
+        };
+        setTables(prev => [...prev, newTable]);
+        setSelectedTable(newTable);
+        setShowNewTableForm(false);
     };
-    setTables(prev => [...prev, newTable]);
-    setSelectedTable(newTable);
-    setShowNewTableForm(false);
-  };
 
   const addPlayer = (tableId: string, playerData: Omit<Player, 'id'>) => {
     const newPlayer: Player = {

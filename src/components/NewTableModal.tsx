@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 
 interface NewTableModalProps {
-  onClose: () => void;
-  onCreateTable: (name: string) => void;
+    onClose: () => void;
+    onCreateTable: (name: string) => void;
 }
 
 export const NewTableModal: React.FC<NewTableModalProps> = ({ onClose, onCreateTable }) => {
-  const [tableName, setTableName] = useState('');
+    const [tableName, setTableName] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!tableName.trim()) return;
-    onCreateTable(tableName);
-  };
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!tableName.trim()) return;
+        onCreateTable(tableName);
+    };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
@@ -24,7 +24,7 @@ export const NewTableModal: React.FC<NewTableModalProps> = ({ onClose, onCreateT
             value={tableName}
             onChange={(e) => setTableName(e.target.value)}
             placeholder="Game Name"
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-4"
+            className="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-4"
             required
           />
           <div className="flex gap-4">

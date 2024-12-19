@@ -4,15 +4,15 @@ import { formatCurrency } from '../utils/calculations';
 import { Trash2 } from 'lucide-react';
 
 interface PlayerListProps {
-  players: Player[];
-  onRemovePlayer: (id: string) => void;
-  onUpdateChips: (id: string, chips: number) => void;
+    players: Player[];
+    onRemovePlayer: (id: string) => void;
+    onUpdateChips: (id: string, chips: number) => void;
 }
 
 export const PlayerList: React.FC<PlayerListProps> = ({ 
-  players, 
-  onRemovePlayer,
-  onUpdateChips 
+    players, 
+    onRemovePlayer,
+    onUpdateChips 
 }) => {
   return (
     <div className="space-y-4">
@@ -27,14 +27,12 @@ export const PlayerList: React.FC<PlayerListProps> = ({
               Buy-in: {formatCurrency(player.buyIn)}
             </p>
           </div>
-          
           <div className="flex items-center gap-4">
             <input
               type="number"
               value={player.chipsAmount}
               onChange={(e) => onUpdateChips(player.id, Number(e.target.value))}
-              className="w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              min="0"
+              className="w-24 p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               step="100"
             />
             <button

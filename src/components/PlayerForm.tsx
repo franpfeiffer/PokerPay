@@ -2,26 +2,30 @@ import React, { useState } from 'react';
 import { Player } from '../types';
 
 interface PlayerFormProps {
-  onAddPlayer: (player: Omit<Player, 'id'>) => void;
+    onAddPlayer: (player: Omit<Player, 'id'>) => void;
 }
 
 export const PlayerForm: React.FC<PlayerFormProps> = ({ onAddPlayer }) => {
-  const [name, setName] = useState('');
-  const [buyIn, setBuyIn] = useState('');
+    const [name, setName] = useState('');
+    const [buyIn, setBuyIn] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name || !buyIn) return;
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!name || !buyIn) return;
 
-    onAddPlayer({
-      name,
-      buyIn: Number(buyIn),
-      chipsAmount: Number(buyIn)
-    });
+        onAddPlayer({
+            name,
+            buyIn: Number(buyIn),
+            chipsAmount: Number(buyIn)
+        });
 
-    setName('');
-    setBuyIn('');
-  };
+        setName('');
+        setBuyIn('');
+    };
+
+    function firstLetter(string: string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -33,8 +37,8 @@ export const PlayerForm: React.FC<PlayerFormProps> = ({ onAddPlayer }) => {
           type="text"
           id="name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          onChange={(e) => setName(firstLetter(e.target.value))}
+          className="mt-1 block p-2 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           required
         />
       </div>
@@ -49,7 +53,7 @@ export const PlayerForm: React.FC<PlayerFormProps> = ({ onAddPlayer }) => {
           onChange={(e) => setBuyIn(e.target.value)}
           min="0"
           step="100"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="mt-1 block p-2 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           required
         />
       </div>
