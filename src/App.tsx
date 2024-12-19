@@ -28,94 +28,94 @@ function App() {
         setShowNewTableForm(false);
     };
 
-  const addPlayer = (tableId: string, playerData: Omit<Player, 'id'>) => {
-    const newPlayer: Player = {
-      ...playerData,
-      id: uuidv4()
+    const addPlayer = (tableId: string, playerData: Omit<Player, 'id'>) => {
+        const newPlayer: Player = {
+            ...playerData,
+            id: uuidv4()
+        };
+
+        setTables(prev => prev.map(table => {
+            if (table.id === tableId) {
+                return {
+                    ...table,
+                    players: [...table.players, newPlayer],
+                    totalPot: table.totalPot + playerData.buyIn
+                };
+            }
+            return table;
+        }));
+
+        setSelectedTable(prev => {
+            if (prev && prev.id === tableId) {
+                return {
+                    ...prev,
+                    players: [...prev.players, newPlayer],
+                    totalPot: prev.totalPot + playerData.buyIn
+                };
+            }
+            return prev;
+        });
     };
 
-    setTables(prev => prev.map(table => {
-      if (table.id === tableId) {
-        return {
-          ...table,
-          players: [...table.players, newPlayer],
-          totalPot: table.totalPot + playerData.buyIn
-        };
-      }
-      return table;
-    }));
+    const removePlayer = (tableId: string, playerId: string) => {
+        setTables(prev => prev.map(table => {
+            if (table.id === tableId) {
+                const player = table.players.find(p => p.id === playerId);
+                return {
+                    ...table,
+                    players: table.players.filter(p => p.id !== playerId),
+                        totalPot: table.totalPot - (player?.buyIn || 0)
+                };
+            }
+            return table;
+        }));
 
-    setSelectedTable(prev => {
-      if (prev && prev.id === tableId) {
-        return {
-          ...prev,
-          players: [...prev.players, newPlayer],
-          totalPot: prev.totalPot + playerData.buyIn
-        };
-      }
-      return prev;
-    });
-  };
+        setSelectedTable(prev => {
+            if (prev && prev.id === tableId) {
+                const player = prev.players.find(p => p.id === playerId);
+                return {
+                    ...prev,
+                    players: prev.players.filter(p => p.id !== playerId),
+                        totalPot: prev.totalPot - (player?.buyIn || 0)
+                };
+            }
+            return prev;
+        });
+    };
 
-  const removePlayer = (tableId: string, playerId: string) => {
-    setTables(prev => prev.map(table => {
-      if (table.id === tableId) {
-        const player = table.players.find(p => p.id === playerId);
-        return {
-          ...table,
-          players: table.players.filter(p => p.id !== playerId),
-          totalPot: table.totalPot - (player?.buyIn || 0)
-        };
-      }
-      return table;
-    }));
+    const updatePlayerChips = (tableId: string, playerId: string, chips: number) => {
+        setTables(prev => prev.map(table => {
+            if (table.id === tableId) {
+                return {
+                    ...table,
+                    players: table.players.map(player => 
+                                               player.id === playerId ? { ...player, chipsAmount: chips } : player
+                                              )
+                };
+            }
+            return table;
+        }));
 
-    setSelectedTable(prev => {
-      if (prev && prev.id === tableId) {
-        const player = prev.players.find(p => p.id === playerId);
-        return {
-          ...prev,
-          players: prev.players.filter(p => p.id !== playerId),
-          totalPot: prev.totalPot - (player?.buyIn || 0)
-        };
-      }
-      return prev;
-    });
-  };
+        setSelectedTable(prev => {
+            if (prev && prev.id === tableId) {
+                return {
+                    ...prev,
+                    players: prev.players.map(player =>
+                                              player.id === playerId ? { ...player, chipsAmount: chips } : player
+                                             )
+                };
+            }
+            return prev;
+        });
+    };
 
-  const updatePlayerChips = (tableId: string, playerId: string, chips: number) => {
-    setTables(prev => prev.map(table => {
-      if (table.id === tableId) {
-        return {
-          ...table,
-          players: table.players.map(player => 
-            player.id === playerId ? { ...player, chipsAmount: chips } : player
-          )
-        };
-      }
-      return table;
-    }));
-
-    setSelectedTable(prev => {
-      if (prev && prev.id === tableId) {
-        return {
-          ...prev,
-          players: prev.players.map(player =>
-            player.id === playerId ? { ...player, chipsAmount: chips } : player
-          )
-        };
-      }
-      return prev;
-    });
-  };
-
-  const finishTable = (tableId: string) => {
-    setTables(prev => prev.map(table => 
-      table.id === tableId ? { ...table, isActive: false } : table
-    ));
-    setSelectedTable(null);
-    setShowResults(false);
-  };
+    const finishTable = (tableId: string) => {
+        setTables(prev => prev.map(table => 
+                                   table.id === tableId ? { ...table, isActive: false } : table
+                                  ));
+                                  setSelectedTable(null);
+                                  setShowResults(false);
+    };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -129,7 +129,7 @@ function App() {
                 className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
               >
                 <Plus size={20} />
-                Nueva Mesa
+                New Game
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
