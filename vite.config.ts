@@ -7,7 +7,13 @@ export default defineConfig({
         react(),
         VitePWA({
             registerType: 'autoUpdate',
-            includeAssets: ['images/*.png', 'images/*.ico'],
+            includeAssets: [
+                'images/*.png',
+                'images/*.ico',
+                'android/*.png',
+                'ios/*.png',
+                'windows11/*.png'
+            ],
             manifest: {
                 name: 'PokerPay',
                 short_name: 'PokerPay',
@@ -18,17 +24,17 @@ export default defineConfig({
                 start_url: '/',
                 icons: [
                     {
-                        src: 'images/logo-192x192.png',
+                        src: 'android/android-launchericon-192-192.png',
                         sizes: '192x192',
                         type: 'image/png'
                     },
                     {
-                        src: 'images/logo-512x512.png',
+                        src: 'android/android-launchericon-512-512.png',
                         sizes: '512x512',
                         type: 'image/png'
                     },
                     {
-                        src: 'images/logo-512x512.png',
+                        src: 'android/android-launchericon-512-512.png',
                         sizes: '512x512',
                         type: 'image/png',
                         purpose: 'any maskable'
@@ -45,7 +51,7 @@ export default defineConfig({
                             cacheName: 'google-fonts-cache',
                             expiration: {
                                 maxEntries: 10,
-                                maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+                                maxAgeSeconds: 60 * 60 * 24 * 365
                             },
                             cacheableResponse: {
                                 statuses: [0, 200]
