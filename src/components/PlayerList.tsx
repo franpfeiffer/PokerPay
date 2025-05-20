@@ -9,16 +9,16 @@ interface PlayerListProps {
     onUpdateChips: (id: string, chips: number) => void;
 }
 
-export const PlayerList: React.FC<PlayerListProps> = ({ 
-    players, 
+export const PlayerList: React.FC<PlayerListProps> = ({
+    players,
     onRemovePlayer,
-    onUpdateChips 
+    onUpdateChips
 }) => {
   return (
     <div className="space-y-4">
       {players.map(player => (
-        <div 
-          key={player.id} 
+        <div
+          key={player.id}
           className="bg-white p-4 rounded-lg shadow flex items-center justify-between"
         >
           <div>
@@ -33,7 +33,7 @@ export const PlayerList: React.FC<PlayerListProps> = ({
               value={player.chipsAmount}
               onChange={(e) => onUpdateChips(player.id, Number(e.target.value))}
               className="w-24 p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              step="100"
+              step="any"
             />
             <button
               onClick={() => onRemovePlayer(player.id)}
