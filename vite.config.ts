@@ -7,13 +7,7 @@ export default defineConfig({
         react(),
         VitePWA({
             registerType: 'autoUpdate',
-            includeAssets: [
-                'images/*.png',
-                'images/*.ico',
-                'android/*.png',
-                'ios/*.png',
-                'windows11/*.png'
-            ],
+            includeAssets: ['images/*.png', 'images/*.ico'],
             manifest: {
                 name: 'PokerPay',
                 short_name: 'PokerPay',
@@ -24,17 +18,17 @@ export default defineConfig({
                 start_url: '/',
                 icons: [
                     {
-                        src: 'android/android-launchericon-192-192.png',
+                        src: '/images/logo-192x192.png',
                         sizes: '192x192',
                         type: 'image/png'
                     },
                     {
-                        src: 'android/android-launchericon-512-512.png',
+                        src: '/images/logo-512x512.png',
                         sizes: '512x512',
                         type: 'image/png'
                     },
                     {
-                        src: 'android/android-launchericon-512-512.png',
+                        src: '/images/logo-512x512.png',
                         sizes: '512x512',
                         type: 'image/png',
                         purpose: 'any maskable'
