@@ -18,24 +18,33 @@ export default defineConfig({
                 start_url: '/',
                 icons: [
                     {
-                        src: '/images/logo-192x192.png',
+                        src: '/images/pwa-192x192.png',
                         sizes: '192x192',
                         type: 'image/png'
                     },
                     {
-                        src: '/images/logo-512x512.png',
+                        src: '/images/pwa-512x512.png',
                         sizes: '512x512',
                         type: 'image/png'
                     },
                     {
-                        src: '/images/logo-512x512.png',
+                        src: '/images/pwa-512x512.png',
                         sizes: '512x512',
                         type: 'image/png',
                         purpose: 'any maskable'
+                    },
+                    {
+                        src: '/images/apple-touch-icon.png',
+                        sizes: '180x180',
+                        type: 'image/png',
+                        purpose: 'apple touch icon'
                     }
                 ]
             },
             workbox: {
+                cleanupOutdatedCaches: true,
+                clientsClaim: true,
+                skipWaiting: true,
                 globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
                 runtimeCaching: [
                     {
