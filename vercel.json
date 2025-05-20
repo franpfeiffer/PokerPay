@@ -1,21 +1,52 @@
 {
   "routes": [
     {
-      "src": "/images/(.*)",
+      "src": "^/assets/(.*)\\.([a-z0-9]+)$",
+      "dest": "/assets/$1.$2",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "$2"
+      }
+    },
+    {
+      "src": "^/(.*)\\.js$",
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "cache-control": "public, max-age=31536000"
+      },
+      "dest": "/$1.js"
+    },
+    {
+      "src": "^/(.*)\\.mjs$",
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "cache-control": "public, max-age=31536000"
+      },
+      "dest": "/$1.mjs"
+    },
+    {
+      "src": "^/(.*)\\.css$",
+      "headers": {
+        "content-type": "text/css; charset=utf-8",
+        "cache-control": "public, max-age=31536000"
+      },
+      "dest": "/$1.css"
+    },
+    {
+      "src": "^/images/(.*)",
       "dest": "/images/$1",
       "headers": { "cache-control": "public, max-age=31536000, immutable" }
     },
     {
-      "src": "/manifest\\.webmanifest",
+      "src": "^/manifest\\.webmanifest$",
       "headers": {
         "content-type": "application/manifest+json; charset=utf-8",
-        "cache-control": "public, max-age=0, must-revalidate",
-        "Access-Control-Allow-Origin": "*"
+        "cache-control": "public, max-age=0, must-revalidate"
       },
       "dest": "/manifest.webmanifest"
     },
     {
-      "src": "/sw\\.js",
+      "src": "^/sw\\.js$",
       "headers": {
         "cache-control": "public, max-age=0, must-revalidate",
         "content-type": "application/javascript; charset=utf-8"
@@ -23,7 +54,31 @@
       "dest": "/sw.js"
     },
     {
-      "src": "/(.*)",
+      "src": "^/(workbox-[a-z0-9]+\\.js)$",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "application/javascript; charset=utf-8"
+      },
+      "dest": "/$1"
+    },
+    {
+      "src": "^/(.*)\\.webp$",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "image/webp"
+      },
+      "dest": "/$1.webp"
+    },
+    {
+      "src": "^/(.*)\\.png$",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "image/png"
+      },
+      "dest": "/$1.png"
+    },
+    {
+      "src": "^/(.*)",
       "headers": { "cache-control": "public, max-age=0, must-revalidate" },
       "dest": "/index.html"
     }
