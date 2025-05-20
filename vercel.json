@@ -1,23 +1,35 @@
 {
   "routes": [
     {
-      "src": "^/manifest\\.json$",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      }
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1",
+      "headers": { "cache-control": "public, max-age=31536000, immutable" }
     },
     {
-      "src": "^/sw\\.js$",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      }
+      "src": "/(.*)\\.(js|css|ico|png|jpg|jpeg|svg|webp|json|webmanifest)",
+      "dest": "/$1.$2",
+      "headers": { "cache-control": "public, max-age=31536000" }
     },
     {
-      "src": "^/(.*)",
-      "dest": "/index.html",
+      "src": "/sw\\.js",
       "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      }
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/javascript; charset=utf-8"
+      },
+      "dest": "/sw.js"
+    },
+    {
+      "src": "/manifest\\.webmanifest",
+      "headers": {
+        "content-type": "application/manifest+json; charset=utf-8",
+        "cache-control": "public, max-age=0, must-revalidate"
+      },
+      "dest": "/manifest.webmanifest"
+    },
+    {
+      "src": "/(.*)",
+      "headers": { "cache-control": "public, max-age=0, must-revalidate" },
+      "dest": "/index.html"
     }
   ]
 }

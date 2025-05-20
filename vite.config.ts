@@ -7,33 +7,56 @@ export default defineConfig({
         react(),
         VitePWA({
             registerType: 'autoUpdate',
-            includeAssets: ['images/favicon.ico', 'images/apple-touch-icon.png', 'images/masked-icon.svg'],
+            includeAssets: ['images/*.png', 'images/*.ico'],
             manifest: {
                 name: 'PokerPay',
                 short_name: 'PokerPay',
-                description: 'Track poker games and calculate payments easily',
+                description: 'Track poker games and payments',
                 theme_color: '#ffffff',
                 background_color: '#ffffff',
                 display: 'standalone',
+                start_url: '/',
                 icons: [
                     {
                         src: 'images/logo-192x192.png',
                         sizes: '192x192',
-                        type: 'image/png',
+                        type: 'image/png'
+                    },
+                    {
+                        src: 'images/logo-512x512.png',
+                        sizes: '512x512',
+                        type: 'image/png'
                     },
                     {
                         src: 'images/logo-512x512.png',
                         sizes: '512x512',
                         type: 'image/png',
-                    },
-                    {
-                        src: 'images/logo-512x512.png',
-                        sizes: '512x512',
-                        type: 'image/png',
-                        purpose: 'any maskable',
-                    },
-                ],
+                        purpose: 'any maskable'
+                    }
+                ]
             },
+            workbox: {
+                globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+                runtimeCaching: [
+                    {
+                        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'google-fonts-cache',
+                            expiration: {
+                                maxEntries: 10,
+                                maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+                            },
+                            cacheableResponse: {
+                                statuses: [0, 200]
+                            }
+                        }
+                    }
+                ]
+            },
+            devOptions: {
+                enabled: true
+            }
         }),
     ],
     optimizeDeps: {
