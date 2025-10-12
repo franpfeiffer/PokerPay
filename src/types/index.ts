@@ -1,8 +1,19 @@
+export interface Transaction {
+    id: string;
+    timestamp: Date;
+    from: string;
+    to: string;
+    amount: number;
+    chips: number;
+}
+
 export interface Player {
     id: string;
     name: string;
-    buyIn: number;
+    initialBuyIn: number;
+    totalCashIn: number;
     chipsAmount: number;
+    transactions: Transaction[];
 }
 
 export interface PokerTable {

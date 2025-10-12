@@ -10,20 +10,20 @@ export const calculateOptimalPayments = (players: Player[]): Payment[] => {
     const payments: Payment[] = [];
     const balances = players.reduce((acc, player) => {
         const finalAmount = player.chipsAmount;
-        const initialAmount = player.buyIn;
-        acc[player.id] = finalAmount - initialAmount;
+        const totalInvested = player.totalCashIn;
+        acc[player.id] = finalAmount - totalInvested;
         return acc;
     }, {} as { [key: string]: number });
 
     const debtors = players
-    .filter(p => balances[p.id] < 0)
-    .map(p => ({ id: p.id, name: p.name, amount: balances[p.id] }))
-    .sort((a, b) => a.amount - b.amount); 
+        .filter(p => balances[p.id] < 0)
+        .map(p => ({ id: p.id, name: p.name, amount: balances[p.id] }))
+        .sort((a, b) => a.amount - b.amount);
 
     const creditors = players
-    .filter(p => balances[p.id] > 0)
-    .map(p => ({ id: p.id, name: p.name, amount: balances[p.id] }))
-    .sort((a, b) => b.amount - a.amount);
+        .filter(p => balances[p.id] > 0)
+        .map(p => ({ id: p.id, name: p.name, amount: balances[p.id] }))
+        .sort((a, b) => b.amount - a.amount);
 
     let debtorIndex = 0;
     let creditorIndex = 0;

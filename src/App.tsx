@@ -1,17 +1,26 @@
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Player, PokerTable } from './types';
+import { Player, PokerTable, Transaction } from './types';
 import { TableCard } from './components/TableCard';
 import { PlayerForm } from './components/PlayerForm';
 import { PlayerList } from './components/PlayerList';
 import { ResultsModal } from './components/ResultsModal';
 import { NewTableModal } from './components/NewTableModal';
+import { RebuyModal } from './components/RebuyModal';
+import { TransactionHistory } from './components/TransactionHistory';
 import { Plus } from 'lucide-react';
 
 const deserializeTables = (tables: PokerTable[]): PokerTable[] => {
     return tables.map(table => ({
         ...table,
-        createdAt: new Date(table.createdAt)
+        createdAt: new Date(table.createdAt),
+        players: table.players.map(player => ({
+            ...player,
+            transactions: player.transactions.map(t => ({
+                ...t,
+                timestamp: new Date(t.timestamp)
+            }))
+        }))
     }));
 };
 
@@ -44,6 +53,9 @@ function App() {
 
     const [showResults, setShowResults] = useState(false);
     const [showNewTableForm, setShowNewTableForm] = useState(false);
+    const [showRebuyModal, setShowRebuyModal] = useState(false);
+    const [rebuyingPlayer, setRebuyingPlayer] = useState<Player | null>(null);
+    const [showTransactionHistory, setShowTransactionHistory] = useState(false);
 
     useEffect(() => {
         try {
@@ -75,10 +87,12 @@ function App() {
         setShowNewTableForm(false);
     };
 
-    const addPlayer = (tableId: string, playerData: Omit<Player, 'id'>) => {
+    const addPlayer = (tableId: string, playerData: Omit<Player, 'id' | 'totalCashIn' | 'transactions'>) => {
         const newPlayer: Player = {
             ...playerData,
-            id: uuidv4()
+            id: uuidv4(),
+            totalCashIn: playerData.initialBuyIn,
+            transactions: []
         };
 
         setTables(prev => prev.map(table => {
@@ -86,7 +100,7 @@ function App() {
                 return {
                     ...table,
                     players: [...table.players, newPlayer],
-                    totalPot: table.totalPot + playerData.buyIn
+                    totalPot: table.totalPot + playerData.initialBuyIn
                 };
             }
             return table;
@@ -97,7 +111,7 @@ function App() {
                 return {
                     ...prev,
                     players: [...prev.players, newPlayer],
-                    totalPot: prev.totalPot + playerData.buyIn
+                    totalPot: prev.totalPot + playerData.initialBuyIn
                 };
             }
             return prev;
@@ -111,7 +125,7 @@ function App() {
                 return {
                     ...table,
                     players: table.players.filter(p => p.id !== playerId),
-                    totalPot: table.totalPot - (player?.buyIn || 0)
+                    totalPot: table.totalPot - (player?.totalCashIn || 0)
                 };
             }
             return table;
@@ -123,7 +137,7 @@ function App() {
                 return {
                     ...prev,
                     players: prev.players.filter(p => p.id !== playerId),
-                    totalPot: prev.totalPot - (player?.buyIn || 0)
+                    totalPot: prev.totalPot - (player?.totalCashIn || 0)
                 };
             }
             return prev;
@@ -154,6 +168,81 @@ function App() {
             }
             return prev;
         });
+    };
+
+    const handleRebuy = (tableId: string, buyerId: string, sellerId: string, amount: number, chips: number) => {
+        const transaction: Transaction = {
+            id: uuidv4(),
+            timestamp: new Date(),
+            from: sellerId,
+            to: buyerId,
+            amount,
+            chips
+        };
+
+        setTables(prev => prev.map(table => {
+            if (table.id === tableId) {
+                return {
+                    ...table,
+                    players: table.players.map(player => {
+                        if (player.id === buyerId) {
+                            return {
+                                ...player,
+                                totalCashIn: player.totalCashIn + amount,
+                                chipsAmount: player.chipsAmount + chips,
+                                transactions: [...player.transactions, transaction]
+                            };
+                        }
+                        if (player.id === sellerId) {
+                            return {
+                                ...player,
+                                chipsAmount: player.chipsAmount - chips,
+                                transactions: [...player.transactions, transaction]
+                            };
+                        }
+                        return player;
+                    }),
+                    totalPot: table.totalPot + amount
+                };
+            }
+            return table;
+        }));
+
+        setSelectedTable(prev => {
+            if (prev && prev.id === tableId) {
+                return {
+                    ...prev,
+                    players: prev.players.map(player => {
+                        if (player.id === buyerId) {
+                            return {
+                                ...player,
+                                totalCashIn: player.totalCashIn + amount,
+                                chipsAmount: player.chipsAmount + chips,
+                                transactions: [...player.transactions, transaction]
+                            };
+                        }
+                        if (player.id === sellerId) {
+                            return {
+                                ...player,
+                                chipsAmount: player.chipsAmount - chips,
+                                transactions: [...player.transactions, transaction]
+                            };
+                        }
+                        return player;
+                    }),
+                    totalPot: prev.totalPot + amount
+                };
+            }
+            return prev;
+        });
+
+        setShowRebuyModal(false);
+        setRebuyingPlayer(null);
+    };
+
+    const openRebuyModal = (player: Player) => {
+        setRebuyingPlayer(player);
+        setShowRebuyModal(true);
     };
 
     const finishTable = (tableId: string) => {
@@ -201,6 +290,12 @@ function App() {
                             <h1 className="text-3xl font-bold text-gray-900">{selectedTable.name}</h1>
                             <div className="space-x-4">
                                 <button
+                                    onClick={() => setShowTransactionHistory(true)}
+                                    className="px-2 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                                >
+                                    History
+                                </button>
+                                <button
                                     onClick={() => setShowResults(true)}
                                     className="px-2 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                                 >
@@ -228,6 +323,7 @@ function App() {
                                 players={selectedTable.players}
                                 onRemovePlayer={(playerId) => removePlayer(selectedTable.id, playerId)}
                                 onUpdateChips={(playerId, chips) => updatePlayerChips(selectedTable.id, playerId, chips)}
+                                onRebuy={openRebuyModal}
                             />
                         </div>
                         {showResults && (
@@ -235,6 +331,25 @@ function App() {
                                 players={selectedTable.players}
                                 onClose={() => setShowResults(false)}
                                 onFinish={() => finishTable(selectedTable.id)}
+                            />
+                        )}
+                        {showRebuyModal && rebuyingPlayer && (
+                            <RebuyModal
+                                player={rebuyingPlayer}
+                                players={selectedTable.players}
+                                onClose={() => {
+                                    setShowRebuyModal(false);
+                                    setRebuyingPlayer(null);
+                                }}
+                                onRebuy={(sellerId, amount, chips) =>
+                                    handleRebuy(selectedTable.id, rebuyingPlayer.id, sellerId, amount, chips)
+                                }
+                            />
+                        )}
+                        {showTransactionHistory && (
+                            <TransactionHistory
+                                players={selectedTable.players}
+                                onClose={() => setShowTransactionHistory(false)}
                             />
                         )}
                     </div>

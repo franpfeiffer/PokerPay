@@ -2,25 +2,25 @@ import React, { useState } from 'react';
 import { Player } from '../types';
 
 interface PlayerFormProps {
-    onAddPlayer: (player: Omit<Player, 'id'>) => void;
+    onAddPlayer: (player: Omit<Player, 'id' | 'totalCashIn' | 'transactions'>) => void;
 }
 
 export const PlayerForm: React.FC<PlayerFormProps> = ({ onAddPlayer }) => {
     const [name, setName] = useState('');
-    const [buyIn, setBuyIn] = useState('');
+    const [initialBuyIn, setInitialBuyIn] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!name || !buyIn) return;
+        if (!name || !initialBuyIn) return;
 
         onAddPlayer({
             name,
-            buyIn: Number(buyIn),
-            chipsAmount: Number(buyIn)
+            initialBuyIn: Number(initialBuyIn),
+            chipsAmount: Number(initialBuyIn)
         });
 
         setName('');
-        setBuyIn('');
+        setInitialBuyIn('');
     };
 
     function firstLetter(string: string) {
@@ -43,14 +43,14 @@ export const PlayerForm: React.FC<PlayerFormProps> = ({ onAddPlayer }) => {
                 />
             </div>
             <div>
-                <label htmlFor="buyIn" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="initialBuyIn" className="block text-sm font-medium text-gray-700">
                     Buy-in
                 </label>
                 <input
                     type="number"
-                    id="buyIn"
-                    value={buyIn}
-                    onChange={(e) => setBuyIn(e.target.value)}
+                    id="initialBuyIn"
+                    value={initialBuyIn}
+                    onChange={(e) => setInitialBuyIn(e.target.value)}
                     min="0"
                     step="any"
                     className="mt-1 block p-2 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
