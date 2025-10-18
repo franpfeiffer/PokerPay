@@ -23,6 +23,10 @@ PokerPay is a web application designed to simplify the management of home poker 
 *   **Icons**: Lucide React
 *   **PWA**: `vite-plugin-pwa`
 
+## Real Usage
+
+1.  Go to the app: [PokerPay](https://pokerpay.pfeifferf.com).
+
 ## Getting Started
 
 To get a local copy up and running, follow these simple steps.
@@ -30,10 +34,6 @@ To get a local copy up and running, follow these simple steps.
 ### Prerequisites
 
 You need to have Node.js and npm installed on your machine.
-
-### Usage
-
-1.  Go to the app: [PokerPay](https://pokerpay.pfeifferf.com).
 
 ### Installation & Usage
 
