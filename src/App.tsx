@@ -170,15 +170,22 @@ function App() {
         });
     };
 
-    const handleRebuy = (tableId: string, buyerId: string, sellerId: string, amount: number, chips: number) => {
-        const transaction: Transaction = {
+    const handleRebuy = (
+        tableId: string,
+        buyerId: string,
+        sellers: { sellerId: string; chips: number }[],
+        totalAmount: number
+    ) => {
+        const totalChips = sellers.reduce((sum, s) => sum + s.chips, 0);
+
+        const transactions: Transaction[] = sellers.map(seller => ({
             id: uuidv4(),
             timestamp: new Date(),
-            from: sellerId,
+            from: seller.sellerId,
             to: buyerId,
-            amount,
-            chips
-        };
+            amount: (seller.chips / totalChips) * totalAmount,
+            chips: seller.chips
+        }));
 
         setTables(prev => prev.map(table => {
             if (table.id === tableId) {
@@ -188,21 +195,25 @@ function App() {
                         if (player.id === buyerId) {
                             return {
                                 ...player,
-                                totalCashIn: player.totalCashIn + amount,
-                                chipsAmount: player.chipsAmount + chips,
-                                transactions: [...player.transactions, transaction]
+                                totalCashIn: player.totalCashIn + totalAmount,
+                                chipsAmount: player.chipsAmount + totalChips,
+                                transactions: [...player.transactions, ...transactions]
                             };
                         }
-                        if (player.id === sellerId) {
+
+                        const sellerData = sellers.find(s => s.sellerId === player.id);
+                        if (sellerData) {
+                            const transaction = transactions.find(t => t.from === player.id);
                             return {
                                 ...player,
-                                chipsAmount: player.chipsAmount - chips,
-                                transactions: [...player.transactions, transaction]
+                                chipsAmount: player.chipsAmount - sellerData.chips,
+                                transactions: transaction ? [...player.transactions, transaction] : player.transactions
                             };
                         }
+
                         return player;
                     }),
-                    totalPot: table.totalPot + amount
+                    totalPot: table.totalPot + totalAmount
                 };
             }
             return table;
@@ -216,21 +227,25 @@ function App() {
                         if (player.id === buyerId) {
                             return {
                                 ...player,
-                                totalCashIn: player.totalCashIn + amount,
-                                chipsAmount: player.chipsAmount + chips,
-                                transactions: [...player.transactions, transaction]
+                                totalCashIn: player.totalCashIn + totalAmount,
+                                chipsAmount: player.chipsAmount + totalChips,
+                                transactions: [...player.transactions, ...transactions]
                             };
                         }
-                        if (player.id === sellerId) {
+
+                        const sellerData = sellers.find(s => s.sellerId === player.id);
+                        if (sellerData) {
+                            const transaction = transactions.find(t => t.from === player.id);
                             return {
                                 ...player,
-                                chipsAmount: player.chipsAmount - chips,
-                                transactions: [...player.transactions, transaction]
+                                chipsAmount: player.chipsAmount - sellerData.chips,
+                                transactions: transaction ? [...player.transactions, transaction] : player.transactions
                             };
                         }
+
                         return player;
                     }),
-                    totalPot: prev.totalPot + amount
+                    totalPot: prev.totalPot + totalAmount
                 };
             }
             return prev;
@@ -285,75 +300,75 @@ function App() {
                         )}
                     </div>
                 ) : (
-                    <div className="max-w-2xl mx-auto space-y-8">
-                        <div className="flex justify-between items-center">
-                            <h1 className="text-3xl font-bold text-gray-900">{selectedTable.name}</h1>
-                            <div className="space-x-4">
-                                <button
-                                    onClick={() => setShowTransactionHistory(true)}
-                                    className="px-2 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
-                                >
-                                    History
-                                </button>
-                                <button
-                                    onClick={() => setShowResults(true)}
-                                    className="px-2 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                                >
-                                    Calc Results
-                                </button>
-                                <button
-                                    onClick={() => setSelectedTable(null)}
-                                    className="px-2 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                                >
-                                    Back
-                                </button>
+                        <div className="max-w-2xl mx-auto space-y-8">
+                            <div className="flex justify-between items-center">
+                                <h1 className="text-3xl font-bold text-gray-900">{selectedTable.name}</h1>
+                                <div className="space-x-4">
+                                    <button
+                                        onClick={() => setShowTransactionHistory(true)}
+                                        className="px-2 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                                    >
+                                        History
+                                    </button>
+                                    <button
+                                        onClick={() => setShowResults(true)}
+                                        className="px-2 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                                    >
+                                        Calc Results
+                                    </button>
+                                    <button
+                                        onClick={() => setSelectedTable(null)}
+                                        className="px-2 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                                    >
+                                        Back
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="bg-white rounded-lg shadow-md p-6">
-                            <h2 className="text-xl font-bold mb-4">Add Player</h2>
-                            <PlayerForm
-                                onAddPlayer={(player) => addPlayer(selectedTable.id, player)}
-                            />
-                        </div>
+                            <div className="bg-white rounded-lg shadow-md p-6">
+                                <h2 className="text-xl font-bold mb-4">Add Player</h2>
+                                <PlayerForm
+                                    onAddPlayer={(player) => addPlayer(selectedTable.id, player)}
+                                />
+                            </div>
 
-                        <div className="bg-white rounded-lg shadow-md p-6">
-                            <h2 className="text-xl font-bold mb-4">Gamblers</h2>
-                            <PlayerList
-                                players={selectedTable.players}
-                                onRemovePlayer={(playerId) => removePlayer(selectedTable.id, playerId)}
-                                onUpdateChips={(playerId, chips) => updatePlayerChips(selectedTable.id, playerId, chips)}
-                                onRebuy={openRebuyModal}
-                            />
+                            <div className="bg-white rounded-lg shadow-md p-6">
+                                <h2 className="text-xl font-bold mb-4">Gamblers</h2>
+                                <PlayerList
+                                    players={selectedTable.players}
+                                    onRemovePlayer={(playerId) => removePlayer(selectedTable.id, playerId)}
+                                    onUpdateChips={(playerId, chips) => updatePlayerChips(selectedTable.id, playerId, chips)}
+                                    onRebuy={openRebuyModal}
+                                />
+                            </div>
+                            {showResults && (
+                                <ResultsModal
+                                    players={selectedTable.players}
+                                    onClose={() => setShowResults(false)}
+                                    onFinish={() => finishTable(selectedTable.id)}
+                                />
+                            )}
+                            {showRebuyModal && rebuyingPlayer && (
+                                <RebuyModal
+                                    player={rebuyingPlayer}
+                                    players={selectedTable.players}
+                                    onClose={() => {
+                                        setShowRebuyModal(false);
+                                        setRebuyingPlayer(null);
+                                    }}
+                                    onRebuy={(sellers, amount) =>
+                                        handleRebuy(selectedTable.id, rebuyingPlayer.id, sellers, amount)
+                                    }
+                                />
+                            )}
+                            {showTransactionHistory && (
+                                <TransactionHistory
+                                    players={selectedTable.players}
+                                    onClose={() => setShowTransactionHistory(false)}
+                                />
+                            )}
                         </div>
-                        {showResults && (
-                            <ResultsModal
-                                players={selectedTable.players}
-                                onClose={() => setShowResults(false)}
-                                onFinish={() => finishTable(selectedTable.id)}
-                            />
-                        )}
-                        {showRebuyModal && rebuyingPlayer && (
-                            <RebuyModal
-                                player={rebuyingPlayer}
-                                players={selectedTable.players}
-                                onClose={() => {
-                                    setShowRebuyModal(false);
-                                    setRebuyingPlayer(null);
-                                }}
-                                onRebuy={(sellerId, amount, chips) =>
-                                    handleRebuy(selectedTable.id, rebuyingPlayer.id, sellerId, amount, chips)
-                                }
-                            />
-                        )}
-                        {showTransactionHistory && (
-                            <TransactionHistory
-                                players={selectedTable.players}
-                                onClose={() => setShowTransactionHistory(false)}
-                            />
-                        )}
-                    </div>
-                )}
+                    )}
             </div>
         </div>
     );
